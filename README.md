@@ -1,5 +1,3 @@
-Nice — I’ll be your mentor for Day 1. I’ll walk you through *exact, step-by-step* installation and environment preparation that we’ll reuse on all upcoming days. I’ll assume an Ubuntu 22.04 / Debian-like Linux VM for the lab (that’s the most repeatable). Where helpful I’ll add short notes about Windows alternatives. Follow each command in order and paste any errors here if you get stuck — I’ll guide you.
-
 # Day 1 — Environment setup & prerequisites (installation steps you’ll keep using later)
 
 ## Goal (one line)
