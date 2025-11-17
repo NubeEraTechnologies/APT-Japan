@@ -1,12 +1,3 @@
-Below is your **complete `README.md` file** that includes **all steps you performed so far**, including:
-
-✔ SVN basic setup
-✔ Fisheye installation notes
-✔ JIRA installation
-✔ JIRA license key generation
-
-This file is clean, beginner-friendly, and ready to save as **readme.md**.
-
 ---
 
 # 📘 **README.md – APT Admin Training (SVN + Fisheye + JIRA + License Generation)**
