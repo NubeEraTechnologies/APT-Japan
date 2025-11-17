@@ -1,36 +1,29 @@
----
+# Day 9 - Jira Installation & Setup (Complete README)
 
-# 📘 **README.md – APT Admin Training (SVN + Fisheye + JIRA + License Generation)**
-
-## **Day 1–9 Summary (From Scratch Installations)**
-
-This README covers all steps performed so far across multiple days, starting from an empty Ubuntu server and progressing through SVN setup, Fisheye installation, JIRA installation, and JIRA license generation.
+This guide documents all steps performed during **Day 9**, including installation of Jira, database setup, initial configuration, project creation, user/role management, workflow customization, and **license key generation**.
 
 ---
 
-# ------------------------------------------------------------
+## 📌 Overview
 
-# 🧩 **1. System Preparation (Ubuntu)**
-
-Run all commands as a sudo user.
-
-```bash
-sudo apt update && sudo apt upgrade -y
-```
-
-Install essential tools:
-
-```bash
-sudo apt install -y unzip wget curl vim net-tools htop
-```
+Day 9 focuses on installing Jira Software (Data Center), connecting it to PostgreSQL, setting up an admin account, generating an evaluation license key, and creating a project inside Jira.
 
 ---
 
-# ------------------------------------------------------------
+# 🟦 1. Requirements
 
-# 🧩 **2. Install Java 11 (Required for JIRA & Fisheye)**
+* Ubuntu 20.04/22.04 VM
+* Minimum 4GB RAM (8GB recommended)
+* Java 11
+* PostgreSQL database
+* Internet access for license generation
+
+---
+
+# 🟦 2. Install Java 11
 
 ```bash
+sudo apt update
 sudo apt install -y openjdk-11-jdk
 java -version
 ```
@@ -43,165 +36,55 @@ openjdk version "11.x"
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **3. Install SVN (Subversion) From Scratch**
-
-### Create repository root:
-
-```bash
-sudo mkdir -p /svn/repos
-sudo chmod -R 777 /svn/repos
-```
-
-### Create repository:
-
-```bash
-sudo svnadmin create /svn/repos/projectA
-```
-
-### Start SVN Server:
-
-```bash
-sudo svnserve -d -r /svn/repos
-```
-
-### Create SVN Users:
-
-Edit passwd file:
-
-```bash
-sudo nano /svn/repos/projectA/conf/passwd
-```
-
-Add:
-
-```
-[users]
-admin = admin123
-developer = dev123
-tester = test123
-```
-
-### Configure Access Control:
-
-```bash
-sudo nano /svn/repos/projectA/conf/authz
-```
-
-Add:
-
-```
-[groups]
-team = admin, developer, tester
-
-[/]
-admin = rw
-developer = rw
-tester = r
-```
-
-### Create standard structure:
-
-```bash
-mkdir ~/svn_temp
-cd ~/svn_temp
-mkdir trunk branches tags
-svn import . svn://localhost/projectA -m "Initial structure"
-```
-
-### Checkout working copy:
-
-```bash
-svn checkout svn://localhost/projectA/trunk ~/projectA_wc --username admin
-```
-
----
-
-# ------------------------------------------------------------
-
-# 🧩 **4. Branching, Switching, Merging in SVN**
-
-### Create branch:
-
-```bash
-svn copy svn://localhost/projectA/trunk \
-         svn://localhost/projectA/branches/feature-login \
-         -m "Created feature-login branch"
-```
-
-### Switch to branch:
-
-```bash
-cd ~/projectA_wc
-svn switch svn://localhost/projectA/branches/feature-login
-```
-
-### Add changes + commit:
-
-```bash
-echo "Login work" >> feature.txt
-svn add feature.txt
-svn commit -m "Added login feature"
-```
-
-### Merge back to trunk:
-
-```bash
-svn switch svn://localhost/projectA/trunk
-svn merge svn://localhost/projectA/branches/feature-login
-svn commit -m "Merged feature-login into trunk"
-```
-
-### Create tag:
-
-```bash
-svn copy svn://localhost/projectA/trunk \
-         svn://localhost/projectA/tags/v1.0 \
-         -m "Release 1.0"
-```
-
----
-
-# ------------------------------------------------------------
-
-# 🧩 **5. Install PostgreSQL (For JIRA)**
+# 🟦 3. Install PostgreSQL
 
 ```bash
 sudo apt install -y postgresql postgresql-contrib
 sudo systemctl enable --now postgresql
 ```
 
-### Create DB and user:
+## Create Jira DB User + Database
 
 ```bash
 sudo -u postgres createuser --pwprompt jira_user
 sudo -u postgres createdb -O jira_user jiradb
 ```
 
----
-
-# ------------------------------------------------------------
-
-# 🧩 **6. Install JIRA Software (Data Center)**
-
-### Create installation folder:
+## Increase max connections
 
 ```bash
-sudo mkdir /opt/jira
-sudo chmod 777 /opt/jira
-cd /opt/jira
+sudo nano /etc/postgresql/*/main/postgresql.conf
 ```
 
-### Upload installer
+Change:
 
-Download from:
-[https://www.atlassian.com/software/jira/update](https://www.atlassian.com/software/jira/update)
+```
+max_connections = 300
+```
 
-Then upload:
+Restart:
 
 ```bash
-scp atlassian-jira-software-9.4.0-x64.bin azureuser@yourserver:/opt/jira/
+sudo systemctl restart postgresql
+```
+
+---
+
+# 🟦 4. Download Jira Software
+
+Create directory:
+
+```bash
+cd /opt
+sudo mkdir jira
+sudo chmod 777 jira
+cd jira
+```
+
+Upload installer (example):
+
+```
+atlassian-jira-software-9.4.0-x64.bin
 ```
 
 Make executable:
@@ -210,24 +93,26 @@ Make executable:
 chmod +x atlassian-jira-software-9.4.0-x64.bin
 ```
 
-### Run Installer:
+---
+
+# 🟦 5. Install Jira
+
+Run installer:
 
 ```bash
 sudo ./atlassian-jira-software-9.4.0-x64.bin
 ```
 
-Choose defaults:
+Choose default settings:
 
-* Install JIRA? → **Yes**
-* Install as service? → **Yes**
-* HTTP Port → **8080**
-* JIRA Home → **/var/atlassian/application-data/jira**
+* Installation directory: `/opt/atlassian/jira`
+* Home directory: `/var/atlassian/application-data/jira`
+* HTTP Port: **8080**
+* Install as service: **Yes**
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **7. Access JIRA for First Time**
+# 🟦 6. Access Jira
 
 Open browser:
 
@@ -235,54 +120,54 @@ Open browser:
 http://<server-ip>:8080
 ```
 
-You will see:
-
-* Setup wizard
-* License page
-* DB configuration
+You will reach the Jira setup wizard.
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **8. Generate JIRA License Key (FREE Evaluation License)**
-
-### Step 1 — Open Atlassian Licensing Portal
-
-Go to:
-
-🔗 [https://my.atlassian.com/products/index](https://my.atlassian.com/products/index)
-
-Login with your Atlassian Account.
-
----
-
-### Step 2 — Create New Evaluation License
-
-Click:
-
-**"New Evaluation License"**
+# 🟦 7. Connect Jira to PostgreSQL
 
 Choose:
 
-* Product: **Jira Software (Data Center)**
-* Type: **Evaluation**
-* Enter your **Server ID** (shown on JIRA’s license screen)
+```
+Set up my own database
+```
 
-Click **Generate License**.
+Fill values:
+
+* **Host:** localhost
+* **Port:** 5432
+* **DB Name:** jiradb
+* **Username:** jira_user
+* **Password:** (your password)
+* **Schema:** public
+
+Click **Test Connection** → **Next**
 
 ---
 
-### Step 3 — Copy License
+# 🟦 8. Generate Jira License Key (Important)
 
-You will see a long block of text:
+Jira requires a license key to complete setup.
 
-```
-AAABrQ0ODAoPeJw9...
-```
+### Steps to generate free evaluation license:
 
-Copy it →
-Paste it into the JIRA setup screen:
+1. Go to:
+   **[https://my.atlassian.com/products/index](https://my.atlassian.com/products/index)**
+
+2. Login with your Atlassian account.
+
+3. Click **New Evaluation License**.
+
+4. Select:
+   **Jira Software (Data Center)**
+
+5. Enter your **Server ID** (shown on Jira setup page).
+
+6. Click **Generate License**.
+
+7. Copy the generated license key.
+
+8. Paste it into Jira's license key field:
 
 ```
 Please enter your license key
@@ -290,52 +175,22 @@ Please enter your license key
 
 Click **Next**.
 
-License is now active.
-
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **9. Connect JIRA to PostgreSQL**
-
-Select:
-
-```
-I’ll set up my own database
-```
+# 🟦 9. Create Jira Admin Account
 
 Enter:
 
-| Field    | Value       |
-| -------- | ----------- |
-| Host     | localhost   |
-| Port     | 5432        |
-| DB       | jiradb      |
-| User     | jira_user   |
-| Password | (your pass) |
-
-Click **Test Connection → Next**
-
----
-
-# ------------------------------------------------------------
-
-# 🧩 **10. Create Admin Account**
-
-Enter:
-
-* Full Name: Admin User
+* Name: Admin User
 * Username: admin
 * Password: admin123
-* Email: your email
+* Email: your_email
 
-Continue.
+Click **Next**.
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **11. Create First JIRA Project**
+# 🟦 10. Create First Project
 
 Go to:
 
@@ -343,22 +198,26 @@ Go to:
 Projects → Create Project
 ```
 
-Choose:
+Choose template:
 
 * **Scrum Software Project**
-* Name: **DevTeam Project**
-* Key: **DEV**
+
+Project Name:
+`DevTeam Project`
+
+Project Key:
+`DEV`
+
+Click **Create**.
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **12. Add Users and Permissions**
+# 🟦 11. Create Users & Assign Roles
 
 Go to:
 
 ```
-Administration → User Management → Create User
+Administration → User Management
 ```
 
 Create:
@@ -367,17 +226,19 @@ Create:
 * tester1
 * lead1
 
-Assign roles:
+Assign roles in DEV project:
 
 ```
-Project Settings → People
+Project Settings → People → Add People
 ```
+
+* dev1 → Developer
+* tester1 → Tester
+* lead1 → Project Administrator
 
 ---
 
-# ------------------------------------------------------------
-
-# 🧩 **13. Workflow Customization**
+# 🟦 12. Modify Workflow
 
 Go to:
 
@@ -387,33 +248,32 @@ Project Settings → Workflows → Edit
 
 Add status:
 
-* Ready for QA
+```
+Ready for QA
+```
 
 Add transitions:
 
-```
-In Progress → Ready for QA
-Ready for QA → Done
-```
+* In Progress → Ready for QA
+* Ready for QA → Done
 
 Publish workflow.
 
 ---
 
-# ------------------------------------------------------------
+# 🟦 13. Verification Checklist
 
-# 🧩 **14. Verification Checklist**
-
-✔ SVN installed and working
-✔ Branching + tags done
-✔ PostgreSQL configured
-✔ JIRA installed and running
-✔ License key generated
-✔ DB connected successfully
-✔ Project created
-✔ Users added
-✔ Workflow customized
+✓ Jira running on port 8080
+✓ PostgreSQL connected
+✓ Admin account working
+✓ DEV project created
+✓ Users added and roles assigned
+✓ Custom workflow applied
 
 ---
 
-# 🎉 **End of README.md**
+# ✅ End of Day 9
+
+Jira is now fully installed, licensed, users configured, and a working Scrum project created.
+
+You may continue with Day 10 for workflows, fields, screen schemes, and permission schemes.
