@@ -275,5 +275,3 @@ Publish workflow.
 # ✅ End of Day 9
 
 Jira is now fully installed, licensed, users configured, and a working Scrum project created.
-
-You may continue with Day 10 for workflows, fields, screen schemes, and permission schemes.
