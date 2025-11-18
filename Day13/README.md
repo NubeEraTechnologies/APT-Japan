@@ -1,7 +1,5 @@
 # Day 13 - Crowd SSO & Application Permissions (Ubuntu, Crowd 7.0.1)
 
-This guide covers configuring **Single Sign-On (SSO)** and **Application Permissions** in **Atlassian Crowd 7.0.1** on **Ubuntu**. It assumes Crowd is already installed and running.
-
 ---
 
 ## 🎯 Objectives
@@ -239,3 +237,4 @@ You have:
 * Validated admin/user access levels
 
 ---
+
