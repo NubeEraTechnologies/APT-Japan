@@ -1,12 +1,3 @@
-Below is your **complete and clean `README.md`** for **Day 14 – Nexus Repository Manager (Hosted Repository Setup)**.
-It includes **only the correct, working steps** based on your successful deployment.
-
-You can copy–paste this directly into a file named:
-
-```
-day14-nexus-hosted-repository-setup.md
-```
-
 ---
 
 # **Day 14 – Nexus Repository Manager (Hosted Repository Setup)**
