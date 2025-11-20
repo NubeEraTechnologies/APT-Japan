@@ -120,7 +120,7 @@ Add or update:
     <mirror>
       <id>central-group</id>
       <mirrorOf>*</mirrorOf>
-      <url>http://4.206.201.229:8081/repository/maven-public-group/</url>
+      <url>http:/YOUR_VM_IP:8081/repository/maven-public-group/</url>
     </mirror>
   </mirrors>
 
