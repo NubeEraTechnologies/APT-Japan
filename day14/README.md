@@ -228,7 +228,7 @@ Replace entire file with:
     <distributionManagement>
         <repository>
             <id>maven-hosted</id>
-            <url>http://4.206.201.229:8081/repository/maven-hosted/</url>
+            <url>http://YOUR_VM_IP:8081/repository/maven-hosted/</url>
         </repository>
     </distributionManagement>
 
