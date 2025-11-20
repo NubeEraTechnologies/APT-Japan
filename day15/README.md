@@ -1,4 +1,3 @@
----
 
 # **Day 15 – Nexus Proxy & Group Repositories + Maven Integration**
 
