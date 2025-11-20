@@ -272,7 +272,7 @@ com/demo/nexus-sample/1.0-SNAPSHOT/
 
 ```bash
 wget --user=admin --password='Admin@123' \
-http://4.206.201.229:8081/repository/maven-hosted/com/demo/nexus-sample/1.0-SNAPSHOT/nexus-sample-1.0-SNAPSHOT.jar
+http://YOUR_VM_IP:8081/repository/maven-hosted/com/demo/nexus-sample/1.0-SNAPSHOT/nexus-sample-1.0-SNAPSHOT.jar
 ```
 
 ✔ Download succeeds
