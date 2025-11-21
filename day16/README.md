@@ -1,11 +1,3 @@
-Below is your **complete, clean, correct, production-ready `README.md` for Day 16**, fully updated based on your real environment and the issues we fixed (such as correct Maven settings.xml format, correct way to test devuser without switching OS user, and correct Nexus cleanup policy steps).
-
-Copy this into:
-
-```
-day16-nexus-access-control-and-cleanup-policies.md
-```
-
 ---
 
 # **Day 16 – Nexus Access Control & Cleanup Policies**
