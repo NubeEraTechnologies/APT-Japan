@@ -1,5 +1,3 @@
----
-
 # **Day 16 – Nexus Access Control & Cleanup Policies**
 
 **APT Admin Training – Term 2 • Day 16**
