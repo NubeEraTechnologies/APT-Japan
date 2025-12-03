@@ -1,11 +1,8 @@
 name: Deploy Azure VM
 
 on:
-  push:
-    branches: [ "main" ]
   workflow_dispatch:
     
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -16,8 +13,7 @@ jobs:
 
     - uses: azure/login@v2
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        enable-AzPSSession: true
+        creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v3
