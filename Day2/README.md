@@ -6,43 +6,14 @@
 
 ```bash
 sudo apt update
-sudo apt install -y ca-certificates curl gnupg lsb-release
-```
-
-Add Docker GPG key:
-
-```bash
-sudo mkdir -m 0755 -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo tee /etc/apt/keyrings/docker.asc > /dev/null
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-```
-
-Add Docker repo:
-
-```bash
-echo \
-  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-```
-
-Install Docker:
-
-```bash
-sudo apt update
-sudo apt install -y docker-ce docker-ce-cli containerd.io
+sudo apt install -y docker.io docker-compose
 ```
 
 Verify:
 
 ```bash
 docker --version
-docker run hello-world
-```
-
-Install Docker Compose:
-
-```bash
-sudo apt install -y docker-compose
+docker info
 ```
 
 ---
@@ -50,8 +21,8 @@ sudo apt install -y docker-compose
 # **STEP 2 — Create Project Directory**
 
 ```bash
-mkdir svn-docker
-cd svn-docker
+mkdir yourName
+cd yourName
 ```
 
 ---
