@@ -93,24 +93,24 @@ CMD ["bash"]
 version: "3.8"
 
 services:
-  svn-server:
+  mujahed-svn-server:
     build: ./server
-    container_name: svn-server
+    container_name: mujahed-svn-server
     ports:
       - "8080:80"
     networks:
-      - svn-net
+      - mujahed-svn-net
 
-  svn-client:
+  mujahed-svn-client:
     build: ./client
-    container_name: svn-client
+    container_name: mujahed-svn-client
     networks:
-      - svn-net
+      - mujahed-svn-net
     tty: true
     stdin_open: true
 
 networks:
-  svn-net:
+  mujahed-svn-net:
 ```
 
 ---
