@@ -1,0 +1,48 @@
+name: Deploy Azure VM
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v3
+
+    - name: Terraform Init
+      working-directory: terraform
+      run: terraform init
+
+    - name: Terraform Apply
+      working-directory: terraform
+      run: terraform apply -auto-approve
+
+    - name: Save SSH Private Key
+      run: |
+        echo "${{ steps.tf-outputs.outputs.private_key }}" > ansible/private.pem
+        chmod 600 ansible/private.pem
+
+    - name: Create Ansible Inventory
+      run: |
+        echo "[azure_vm]" > ansible/inventory
+        echo "${{ steps.tf-outputs.outputs.public_ip }}" >> ansible/inventory
+
+    - name: Install Ansible
+      run: sudo apt-get update && sudo apt-get install -y ansible
+
+    - name: Run Ansible
+      run: |
+        ansible-playbook -i ansible/inventory ansible/install-packages.yml \
+          --private-key ansible/private.pem \
+          -u azureuser
