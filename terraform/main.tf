@@ -7,10 +7,33 @@ provider "azurerm" {
 variable "prefix" { default = "devvm" }
 variable "location" { default = "eastus" }
 
+data "azurerm_compute_resource_skus" "all" {}
+
+locals {
+  required_vm_skus = [
+    "Standard_D2s_v3",
+    "Standard_D2as_v5",
+    "Standard_D2ls_v5"
+  ]
+
+  filtered_skus = [
+    for sku in data.azurerm_compute_resource_skus.all.resource_skus :
+    sku.name if contains(local.required_vm_skus, sku.name)
+  ]
+
+  chosen_vm_sku = length(local.filtered_skus) > 0 ? local.filtered_skus[0] : "Standard_D2s_v3"
+
+  chosen_region = [
+    for sku in data.azurerm_compute_resource_skus.all.resource_skus :
+    sku.locations[0] if sku.name == local.chosen_vm_sku
+  ][0]
+}
+
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-rg"
-  location = var.location
+  location = local.chosen_region
 }
+
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.prefix}-vnet"
   location            = azurerm_resource_group.rg.location
@@ -25,14 +48,12 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-# 🔥 FIXED: Basic PIP quota = 0 → use Standard + Static (works everywhere)
 resource "azurerm_public_ip" "public_ip" {
   name                = "${var.prefix}-pip"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
-
-  sku                 = "Standard"   # REQUIRED for most subscriptions
-  allocation_method   = "Static"     # REQUIRED for Standard SKU
+  sku                 = "Standard"
+  allocation_method   = "Static"
 }
 
 resource "azurerm_network_interface" "nic" {
