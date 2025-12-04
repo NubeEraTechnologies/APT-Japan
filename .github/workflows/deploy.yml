@@ -23,7 +23,9 @@ jobs:
 
       - name: Verify az account
         run: az account show
-
+        
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
       # example: terraform steps or other actions...
       - name: Terraform init
         run: |
