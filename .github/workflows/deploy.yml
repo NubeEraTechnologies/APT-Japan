@@ -37,11 +37,17 @@ jobs:
         run: |
           regions=(eastus eastus2 centralus westus westus2 westus3 northeurope westeurope uksouth)
           sizes=(Standard_D2s_v3 Standard_D2as_v5 Standard_D2ls_v5 Standard_D2_v2)
-      
+          
           for r in "${regions[@]}"; do
             for s in "${sizes[@]}"; do
               echo "Testing $s in $r"
-              count=$(az vm list-skus --location $r --size $s --query "[?capabilities[?name=='vCPUs'].value=='2']" | jq length)
+              count=$(az vm list-skus \
+                --location $r \
+                --resource-type virtualMachines \
+                --size $s \
+                --query "[?capabilities[?name=='vCPUs'].value=='2'] | length(@)" \
+                -o tsv)
+          
               if [ "$count" -gt 0 ]; then
                 echo "FOUND REGION=$r SIZE=$s"
                 echo "region=$r" >> $GITHUB_OUTPUT
@@ -50,9 +56,10 @@ jobs:
               fi
             done
           done
-      
+          
           echo "No available region found!"
           exit 1
+
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
