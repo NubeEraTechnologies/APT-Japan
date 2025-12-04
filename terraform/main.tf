@@ -13,10 +13,6 @@ terraform {
   }
 }
 
-provider "azurerm" {
-  features {}
-}
-
 variable "prefix" {
   default = "devvm"
 }
