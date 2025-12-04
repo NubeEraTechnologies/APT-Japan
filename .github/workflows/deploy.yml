@@ -32,13 +32,6 @@ jobs:
           cd terraform
           terraform init
 
-      - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: terraform
-        env:
-          TF_VAR_region: ${{ steps.region.outputs.region }}
-          TF_VAR_vm_size: ${{ steps.region.outputs.size }}
-
 
       - name: Terraform Apply
         working-directory: terraform
