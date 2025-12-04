@@ -31,6 +31,36 @@ jobs:
         run: |
           cd terraform
           terraform init
+          
+      - name: Select Azure Region with 2 vCPU & 8GB support
+        id: region
+        run: |
+          regions=(eastus eastus2 centralus westus westus2 westus3 northeurope westeurope uksouth)
+          sizes=(Standard_D2s_v3 Standard_D2as_v5 Standard_D2ls_v5 Standard_D2_v2)
+      
+          for r in "${regions[@]}"; do
+            for s in "${sizes[@]}"; do
+              echo "Testing $s in $r"
+              count=$(az vm list-skus --location $r --size $s --query "[?capabilities[?name=='vCPUs'].value=='2']" | jq length)
+              if [ "$count" -gt 0 ]; then
+                echo "FOUND REGION=$r SIZE=$s"
+                echo "region=$r" >> $GITHUB_OUTPUT
+                echo "size=$s"   >> $GITHUB_OUTPUT
+                exit 0
+              fi
+            done
+          done
+      
+          echo "No available region found!"
+          exit 1
+
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: terraform
+        env:
+          TF_VAR_region: ${{ steps.region.outputs.region }}
+          TF_VAR_vm_size: ${{ steps.region.outputs.size }}
+
 
       - name: Terraform Apply
         working-directory: terraform
