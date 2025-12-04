@@ -13,15 +13,29 @@ terraform {
   }
 }
 
-variable "prefix" { default = "devvm" }
-variable "region" {}
-variable "vm_size" {}
+variable "prefix" {
+  default = "devvm"
+}
 
+variable "region" {
+  default = "eastus2"
+}
+
+variable "vm_size" {
+  default = "Standard_B2s"  # change to Standard_D2s_v3 if you want 8GB RAM
+}
+
+# ---------------------------------------------------------------------------
+# RESOURCE GROUP
+# ---------------------------------------------------------------------------
 resource "azurerm_resource_group" "rg" {
   name     = "${var.prefix}-rg"
   location = var.region
 }
 
+# ---------------------------------------------------------------------------
+# VIRTUAL NETWORK + SUBNET
+# ---------------------------------------------------------------------------
 resource "azurerm_virtual_network" "vnet" {
   name                = "${var.prefix}-vnet"
   location            = var.region
@@ -36,14 +50,20 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
+# ---------------------------------------------------------------------------
+# PUBLIC IP (Standard + Static)
+# ---------------------------------------------------------------------------
 resource "azurerm_public_ip" "public_ip" {
   name                = "${var.prefix}-pip"
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.region
-  sku                 = "Standard"
   allocation_method   = "Static"
+  sku                 = "Standard"
 }
 
+# ---------------------------------------------------------------------------
+# NETWORK INTERFACE
+# ---------------------------------------------------------------------------
 resource "azurerm_network_interface" "nic" {
   name                = "${var.prefix}-nic"
   location            = var.region
@@ -57,15 +77,22 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
+# ---------------------------------------------------------------------------
+# SSH KEY
+# ---------------------------------------------------------------------------
 resource "tls_private_key" "sshkey" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
+# ---------------------------------------------------------------------------
+# VIRTUAL MACHINE
+# ---------------------------------------------------------------------------
 resource "azurerm_linux_virtual_machine" "vm" {
   name                = "${var.prefix}-vm"
   location            = var.region
   resource_group_name = azurerm_resource_group.rg.name
+
   size                = var.vm_size
   admin_username      = "azureuser"
 
@@ -91,14 +118,9 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 }
 
-output "selected_region" {
-  value = var.region
-}
-
-output "selected_vm_size" {
-  value = var.vm_size
-}
-
+# ---------------------------------------------------------------------------
+# OUTPUTS
+# ---------------------------------------------------------------------------
 output "public_ip" {
   value = azurerm_public_ip.public_ip.ip_address
 }
@@ -108,3 +130,10 @@ output "private_key" {
   sensitive = true
 }
 
+output "vm_size" {
+  value = var.vm_size
+}
+
+output "region" {
+  value = var.region
+}
