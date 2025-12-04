@@ -24,6 +24,20 @@ echo " 🚀 AUTOMATED SVN + DOCKER + DOCKER COMPOSE SETUP"
 echo "===================================================="
 
 ###############################################
+# STEP 0 — FIX DOCKER PERMISSIONS PROACTIVELY
+###############################################
+
+echo "🔧 Checking Docker group permissions..."
+if ! groups $USER | grep -q docker; then
+    echo "🛠️  Adding user '$USER' to docker group..."
+    sudo usermod -aG docker $USER
+    FIXED_PERMISSION=1
+else
+    FIXED_PERMISSION=0
+    echo "✔ User already in docker group"
+fi
+
+###############################################
 # STEP 1 — INSTALL DOCKER & DOCKER COMPOSE
 ###############################################
 echo "🔧 Installing Docker..."
@@ -45,10 +59,36 @@ sudo apt update
 sudo apt install -y docker-ce docker-ce-cli containerd.io
 
 echo "🐳 Docker installed:"
-docker --version
+docker --version || true
 
 echo "📦 Installing Docker Compose..."
 sudo apt install -y docker-compose
+
+echo "===================================================="
+echo " 🛠️  Fixing Docker Socket Permissions (if needed)"
+echo "===================================================="
+
+# Fix permission denied on /var/run/docker.sock
+if [ ! -w /var/run/docker.sock ]; then
+    echo "🛠️  Fixing /var/run/docker.sock permissions..."
+    sudo chmod 666 /var/run/docker.sock || true
+fi
+
+###########################################################
+# If user was added to docker group, notify about relogin
+###########################################################
+if [ "$FIXED_PERMISSION" -eq 1 ]; then
+    echo ""
+    echo "===================================================="
+    echo " ⚠️  IMPORTANT: YOU MUST LOG OUT AND LOG IN AGAIN"
+    echo "===================================================="
+    echo "Because the script added your user to the docker group."
+    echo "Please log out of SSH and log in again, then re-run:"
+    echo ""
+    echo "   ./setup-svn.sh"
+    echo ""
+    exit 0
+fi
 
 echo "===================================================="
 echo " 🏗️  Creating SVN project structure"
@@ -154,6 +194,7 @@ echo ""
 echo "➡ To enter SVN client: docker exec -it svn-client bash"
 echo ""
 echo "Everything is ready! 🚀"
+
 ```
 
 ---
