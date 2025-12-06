@@ -22,7 +22,7 @@ variable "region" {
 }
 
 variable "vm_size" {
-  default = "Standard_B2s"  # change to Standard_D2s_v3 if you want 8GB RAM
+  default = "Standard_DS2_v2"  # change to Standard_D2s_v3 if you want 8GB RAM
 }
 
 # ---------------------------------------------------------------------------
